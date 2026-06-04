@@ -82,9 +82,11 @@ async function main() {
   console.log("[e2e] html:", htmlPath);
   console.log("[e2e] png :", pngPath);
 
-  // 콘텐츠 규칙 점검 (경고만 — 모델에 따라 어긋날 수 있음)
-  if (card.sections?.length !== 6) console.warn("[e2e] ⚠ sections 가 6개가 아님:", card.sections?.length);
-  if (card.summary_bar?.pills?.length !== 5) console.warn("[e2e] ⚠ pills 가 5개가 아님:", card.summary_bar?.pills?.length);
+  // 콘텐츠 규칙 점검 (경고만 — 가변: 섹션 4~8, pill 4~6)
+  const sc = card.sections?.length ?? 0;
+  const pc = card.summary_bar?.pills?.length ?? 0;
+  if (sc < 4 || sc > 8) console.warn("[e2e] ⚠ sections 가 4~8 범위 밖:", sc);
+  if (pc < 4 || pc > 6) console.warn("[e2e] ⚠ pills 가 4~6 범위 밖:", pc);
 
   // 산출물 존재 확인
   const png = await fs.stat(pngPath);

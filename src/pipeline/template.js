@@ -117,6 +117,8 @@ export function renderCardHtml(card, width = CARD_WIDTH) {
     position: relative;
     min-height: 220px;
   }
+  /* 섹션 수가 홀수면 마지막 칸이 한 칸만 차서 어색하므로 전체 폭으로 확장 */
+  .grid .sec:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .sec .num {
     position: absolute;
     top: 18px; right: 22px;
