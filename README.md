@@ -7,6 +7,8 @@
 > `localnotebooklm` 의 카드뉴스 파이프라인을 독립 Node.js MCP 서버로 포팅한 것입니다.
 > 콘텐츠 규칙: **섹션 정확히 6개 · 요약바 pill 정확히 5개**.
 
+> 💰 모델별 생성 비용 비교는 [PRICING.md](PRICING.md) 참고. (자동·대량 생성 기본값: `gpt-5.4-nano`)
+
 ## 산출물 예시
 
 강의 자막(.vtt/.srt) 또는 텍스트 → 회차 1장 카드뉴스 PNG.
