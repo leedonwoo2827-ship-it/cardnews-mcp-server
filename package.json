@@ -1,0 +1,26 @@
+{
+  "name": "cardnews-mcp-server",
+  "version": "0.1.0",
+  "description": "자막/텍스트를 1080x1620 인포그래픽 카드뉴스(HTML + PNG)로 만드는 MCP 서버",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "cardnews-mcp-server": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test/e2e.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "dotenv": "^16.4.5",
+    "openai": "^4.77.0",
+    "puppeteer": "^23.11.1",
+    "zod": "^3.24.1"
+  },
+  "license": "MIT"
+}
