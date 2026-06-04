@@ -1,9 +1,10 @@
 // HTML 문자열 → PNG 캡처.
 // localnotebooklm/studio/cardnews.py:capture_png (Playwright) 를 Puppeteer 로 포팅.
 //
-// .card 박스를 측정해 콘텐츠 높이에 정확히 맞춘다:
-//   1) viewport.height 를 콘텐츠 예상 최대치(3000)보다 크게 두어 layout 이 자연스럽게 끝나게
-//   2) .card 의 bounding rect / scrollHeight 를 측정해 그 영역만 clip 캡처
+// .card 박스를 측정해 콘텐츠 높이에 정확히 맞춘다 (섹션 수가 가변이라 카드 높이도 가변):
+//   1) 넉넉한 viewport 로 로드해 layout 을 끝낸다
+//   2) .card 높이를 측정해 viewport 를 그 높이로 키운다 → 긴 카드도 잘리지 않음
+//   3) 폰트 로드 후 .card 박스를 다시 측정해 그 영역만 clip 캡처
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -40,17 +41,27 @@ export async function capturePng(html, pngPath, width = CARD_WIDTH) {
     );
     await sleep(300);
 
-    // .card 박스 측정. height 는 scrollHeight 로 안전망.
-    const box = await page.evaluate(() => {
-      const el = document.querySelector(".card") || document.body;
-      const r = el.getBoundingClientRect();
-      return {
-        x: r.left,
-        y: r.top,
-        width: r.width,
-        height: Math.max(r.height, el.scrollHeight),
-      };
-    });
+    const measure = () =>
+      page.evaluate(() => {
+        const el = document.querySelector(".card") || document.body;
+        const r = el.getBoundingClientRect();
+        return {
+          x: r.left,
+          y: r.top,
+          width: r.width,
+          // BoundingRect 가 자식 margin 으로 과소평가될 수 있어 scrollHeight 로 안전망.
+          height: Math.max(r.height, el.scrollHeight, document.body.scrollHeight),
+        };
+      });
+
+    // 1차 측정 → 콘텐츠가 viewport(3000)보다 길면 viewport 를 키워 잘림 방지.
+    let box = await measure();
+    const needH = Math.ceil(box.y + box.height + 8);
+    if (needH > 3000) {
+      await page.setViewport({ width, height: needH, deviceScaleFactor: 2 });
+      await sleep(100); // 리사이즈 후 layout 안정화 (width 불변이라 높이만 확정)
+      box = await measure();
+    }
 
     await page.screenshot({ path: pngPath, clip: box });
   } finally {
